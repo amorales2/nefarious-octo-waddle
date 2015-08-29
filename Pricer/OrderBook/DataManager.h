@@ -11,7 +11,6 @@ class DataManager
 public:
 	DataManager();
 	Order createOrder(const std::string& orderData);
-	void addOrderToBook(Order& order, Book& book);
 	void removeOrderFromBook();
 	bool isTransactionSizeReached(int targetSize);
 	std::string priceOfAction();

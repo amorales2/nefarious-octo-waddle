@@ -15,55 +15,36 @@ Order DataManager::createOrder(const std::string& orderData)
 	std::string temp;
 	std::istringstream test(orderData);
 
-	//TODO: form this into a loop
 	//timestamp
 	test >> temp;
 	std::cout << "substring: " << temp + "\n" << std::endl;
-	order.m_timestamp = temp;
+	order.m_timestamp = std::stoi(temp);
 
 	//ordertype
 	test >> temp;
 	std::cout << "substring: " << temp + "\n" << std::endl;
-	order.m_orderType = temp;
+	order.m_orderType = temp.c_str()[0];
 
 	//orderId
 	test >> temp;
 	std::cout << "substring: " << temp + "\n" << std::endl;
 	order.m_orderId = temp;
 
-	//side
+	//orderAction
 	test >> temp;
 	std::cout << "substring: " << temp + "\n" << std::endl;
-	order.m_orderId = temp;
+	order.m_orderAction = temp.c_str()[0];
 
 	//price
 	test >> temp;
 	std::cout << "substring: " << temp + "\n" << std::endl;
-	order.m_price = std::stoi(temp);
+	order.m_price = std::stod(temp);
 
 	//size
 	test >> temp;
 	std::cout << "substring: " << temp + "\n" << std::endl;
 	order.m_size = std::stoi(temp);
 	return order;
-}
-
-void DataManager::addOrderToBook(Order& order, Book& book)
-{
-	if (order.m_orderType == "B")
-	{
-
-	}
-
-	if (order.m_orderType == "S")
-	{
-
-	}
-}
-
-void DataManager::removeOrderFromBook()
-{
-
 }
 
 bool DataManager::isTransactionSizeReached(int targetSize)
