@@ -10,6 +10,7 @@ struct Order
 	char m_orderAction;//previously m_side
 	double m_price;
 	int m_size;
+	
 
 	Order();
 	~Order();

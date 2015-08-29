@@ -4,7 +4,9 @@
 #include <iostream>
 #include <sstream>
 
-DataManager::DataManager()
+DataManager::DataManager(int targetSize)
+	: m_book(),
+	m_targetSize(targetSize)
 {
 
 }
@@ -55,5 +57,59 @@ bool DataManager::isTransactionSizeReached(int targetSize)
 
 std::string DataManager::priceOfAction()
 {
+	//TODO
 	return std::string();
+}
+
+
+bool DataManager::targetSizeReached(const char & orderType)
+{
+	if (orderType == 'B')
+	{
+		if(m_book.getCurrentBuySize() >= m_targetSize)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	if (orderType == 'S')
+	{
+		if (m_book.getCurrentBuySize() >= m_targetSize)
+		{
+			return true;
+		}
+		return false;
+	}
+	else
+	{
+		std::cout << "Error, invalid orderType" << std::endl;
+		return false;
+	}
+	
+	
+}
+
+void DataManager::addOrderToBook(const Order & order)
+{
+	const char orderAction = order.m_orderAction;
+	if (orderAction == 'B')
+	{
+		m_book.addBuyOrderToBook(order);
+	}
+	else if (orderAction == 'S')
+	{
+		m_book.addSellOrderToBook(order);
+	}
+	else
+	{
+		//TODO handle exception
+		std::cout << "Error: invalid orderAction on order" << order.m_orderId << std::endl;
+	}
+}
+
+void DataManager::applyReduceOrder(const Order & order)
+{
+
+	//TODO
 }

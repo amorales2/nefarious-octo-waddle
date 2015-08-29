@@ -1,17 +1,25 @@
 #pragma once
 
+#include <vector>
 #include "Order.h"
 #include "Book.h"
-class Order;
+
+struct Order;
 class Book;
 
 class DataManager
 {
-
 public:
-	DataManager();
+	DataManager(int targetSize);
+	int m_targetSize;
 	Order createOrder(const std::string& orderData);
-	void removeOrderFromBook();
 	bool isTransactionSizeReached(int targetSize);
 	std::string priceOfAction();
+
+	bool targetSizeReached(const char& orderType);
+	void addOrderToBook(const Order& order);
+	void applyReduceOrder(const Order& order);
+
+private:
+	Book m_book;
 };

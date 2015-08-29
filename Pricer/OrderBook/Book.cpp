@@ -20,9 +20,14 @@ void Book::addSellOrderToBook(const Order& order)
 	m_currentSellSize += order.m_size;
 }
 
+void Book::applyReduceOrder(const Order & order)
+{
+
+}
+
 void Book::removeOrderFromBook(const Order& order)
 {
-	//TODO: SEARCH THROUGH DATASTRUCTURE AND REMOVE THE ORDER BY THE CORRECT AMOUNT
+	
 }
 
 void Book::sortOrdersByPrice(std::string orderSide)
@@ -59,6 +64,14 @@ void Book::sortOrdersById(std::string orderSide)
 	{
 
 	}
+}
+int Book::getCurrentBuySize()
+{
+	return m_currentBuySize;
+}
+int Book::getCurrentSellSize()
+{
+	return m_currentSellSize;
 }
 Book::Book()
 	: m_currentBuySize(0),
