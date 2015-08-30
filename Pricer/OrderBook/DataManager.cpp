@@ -51,57 +51,31 @@ Order DataManager::createOrder(const std::string& orderData)
 	return order;
 }
 
-
-bool DataManager::isTransactionSizeReached(const char& orderAction)
-{
-	if(orderAction=='S')
-	{
-		if (m_book.getCurrentSellSize() >= m_targetSize)
-			return true;
-		else
-			return false;
-	}
-	if (orderAction == 'B')
-	{
-		if (m_book.getCurrentBuySize() >= m_targetSize)
-			return true;
-		else
-			return false;
-	}
-
-	std::cout << "Invalid orderAction: DataManager::isTransactionSizeReached()"<<std::endl;
-	return false;
-}
-
 std::string DataManager::priceOfAction(const char & orderAction)
 {
-
 	//TODO
 	return std::string();
 }
 
 
-bool DataManager::targetSizeReached(const char & orderType)
+bool DataManager::targetSizeReached(const char & orderAction)
 {
-	if (orderType == 'B')
-	{
-		if (m_book.getCurrentBuySize() >= m_targetSize)
-		{
-			return true;
-		}
-		return false;
-	}
 
-	if (orderType == 'S')
+	switch (orderAction)
 	{
+	case 'B':
 		if (m_book.getCurrentBuySize() >= m_targetSize)
 		{
 			return true;
 		}
 		return false;
-	}
-	else
-	{
+	case 'S':
+		if (m_book.getCurrentBuySize() >= m_targetSize)
+		{
+			return true;
+		}
+		return false;
+	default:
 		std::cout << "Error, invalid orderType" << std::endl;
 		return false;
 	}
@@ -128,26 +102,41 @@ void DataManager::addOrderToBook(const Order & order)
 
 void DataManager::applyReduceOrder(const Order& order)
 {
-	//TODO
-
 	//sort the buy data by ID
 	m_book.sortOrdersById('B');
+
 	//search through buy data for order.m_id
-	
+	if (m_book.buyOrdersContainOrder(order))
+	{
+		//if found, reduce that number by order.m_size
+		m_book.reduceOrderInBuyList(order);
+	}
+	else
+	{
+		//sort the sell data by ID
+		m_book.sortOrdersById('S');
+	}
 
-
-	//if found, reduce that number by order.m_size
-
-	//else
-
-	//sort the sell data by ID
 	//search through sell data for order.m_id
-	//if found, reduce that number by order.m_size
+	if (m_book.sellOrdersContainOrder(order))
+	{
+		//if found, reduce that number by order.m_size
+		m_book.reduceOrderInSellList(order);
+	}
+	else
+	{
+		std::cout << "cannot reduce order. Order not found" << std::endl;
+	}
+}
+void DataManager::printOutputToConsole()
+{
+	//TODO: build string and output to console
 }
 
-int DataManager::getTargetSize()
+void DataManager::printOutputToFile(std::string fileName)
 {
-	return m_targetSize;
+	//TODO: build string and output to file
+
 }
 
 void DataManager::setTargetSize(int targetSize)

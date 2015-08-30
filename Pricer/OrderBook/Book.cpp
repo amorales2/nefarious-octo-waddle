@@ -17,7 +17,6 @@ void Book::addBuyOrderToBook(const Order& order)
 	//increase the total buy orders
 	m_currentBuySize += order.m_size;
 }
-
 void Book::addSellOrderToBook(const Order& order)
 {
 	//add the sell order to the vector
@@ -26,7 +25,6 @@ void Book::addSellOrderToBook(const Order& order)
 	//increase the total cell orders
 	m_currentSellSize += order.m_size;
 }
-
 void Book::reduceOrderInBuyList(const Order & order)
 {
 	//std::sort = N*log2(N)
@@ -34,43 +32,39 @@ void Book::reduceOrderInBuyList(const Order & order)
 	sortOrdersByPrice('B');
 
 	//TODO: make sure lambda function is working
-	auto lower = std::lower_bound(m_buyOrders.begin(), m_buyOrders.end(), order.m_orderId,
-		[](const Order& order1, std::string rhs)
+	auto lower = std::lower_bound(m_buyOrders.begin(), m_buyOrders.end(), order,
+		[](const Order& lhs, const Order& rhs)
 	{
-		return order1.m_orderId < rhs;
+		return lhs.m_orderId < rhs.m_orderId;
 	});
 
 	//if the order is 0 or less, remove it from the vector
-	lower._Ptr->m_size -= order.m_size;
-	if (lower._Ptr->m_size <= 0)
+	lower->m_size -= order.m_size;
+	if (lower->m_size <= 0)
 	{
 		std::iter_swap(lower, m_buyOrders.end());
 		m_buyOrders.pop_back();
 	}
 }
-
 void Book::reduceOrderInSellList(const Order & order)
 {
 	sortOrdersByPrice('S');
 
 	//TODO: make sure lambda function is working
-	auto lower = std::lower_bound(m_sellOrders.begin(), m_sellOrders.end(), order.m_orderId,
-		[](const Order& order1, std::string rhs)
+	auto lower = std::lower_bound(m_sellOrders.begin(), m_sellOrders.end(), order,
+		[](const Order& lhs, const Order& rhs)
 	{
-		return order1.m_orderId < rhs;
+		return lhs.m_orderId < rhs.m_orderId;
 	});
 
-
 	//if the order is 0 or less, remove it from the vector
-	lower._Ptr->m_size -= order.m_size;
-	if(lower._Ptr->m_size<=0)
+	lower->m_size -= order.m_size;
+	if (lower->m_size <= 0)
 	{
 		std::iter_swap(lower, m_sellOrders.end());
 		m_sellOrders.pop_back();
 	}
 }
-
-
 void Book::sortOrdersByPrice(const char& orderSide)
 {
 	//TODO:sort order by Price
@@ -113,6 +107,25 @@ void Book::sortOrdersById(const char& orderSide)
 		});
 	}
 }
+bool Book::buyOrdersContainOrder(const Order& order)
+{
+	//this will return true if the reduce order ID is found in the BUY vector
+	return (std::binary_search(m_buyOrders.begin(), m_buyOrders.end(), order,
+		[](const Order& order1, const Order& order2)
+	{
+		return order1.m_orderId < order2.m_orderId;
+	}));
+}
+
+bool Book::sellOrdersContainOrder(const Order& order)
+{
+	//this will return true if the reduce order ID if found in the SELL vector
+	return (std::binary_search(m_sellOrders.begin(), m_sellOrders.end(), order,
+		[](const Order& order1, const Order& order2)
+	{
+		return order1.m_orderId < order2.m_orderId;
+	}));
+}
 
 int Book::getCurrentBuySize()
 {
@@ -122,3 +135,4 @@ int Book::getCurrentSellSize()
 {
 	return m_currentSellSize;
 }
+

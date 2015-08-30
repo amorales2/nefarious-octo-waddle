@@ -21,7 +21,8 @@ public:
 	int getCurrentBuySize();
 	int getCurrentSellSize();
 
-
+	bool buyOrdersContainOrder(const Order& order);
+	bool sellOrdersContainOrder(const Order& order);
 
 private:
 	int m_currentBuySize;

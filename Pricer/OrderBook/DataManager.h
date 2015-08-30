@@ -10,15 +10,15 @@ public:
 	DataManager(int targetSize);
 
 	Order createOrder(const std::string& orderData);
-	bool isTransactionSizeReached(const char& orderAction);
 	std::string priceOfAction(const char& orderAction);
 
+	int DataManager::getTargetSize() { return m_targetSize; }
 	bool targetSizeReached(const char& orderType);
 	void addOrderToBook(const Order& order);
-
 	void applyReduceOrder(const Order& order);
-	int getTargetSize();
 	void setTargetSize(int targetSize);
+	void printOutputToConsole();
+	void printOutputToFile(std::string fileName);
 
 private:
 	Book m_book;
