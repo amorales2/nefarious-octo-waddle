@@ -11,7 +11,6 @@ struct Order
 	double m_price;
 	int m_size;
 	
-
 	Order();
 	~Order();
 };

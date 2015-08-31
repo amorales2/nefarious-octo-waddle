@@ -3,6 +3,7 @@
 #include "Book.h"
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 DataManager::DataManager(int targetSize)
 	: m_book(),
@@ -51,10 +52,14 @@ Order DataManager::createOrder(const std::string& orderData)
 	return order;
 }
 
-std::string DataManager::priceOfAction(const char & orderAction)
+void DataManager::addOrderToBook(std::shared_ptr<Order> order)
 {
-	//TODO
-	return std::string();
+	
+}
+
+void DataManager::applyReduceOrder(std::shared_ptr<Order> order)
+{
+
 }
 
 
@@ -81,53 +86,6 @@ bool DataManager::targetSizeReached(const char & orderAction)
 	}
 }
 
-void DataManager::addOrderToBook(const Order & order)
-{
-	const char orderAction = order.m_orderAction;
-	if (orderAction == 'B')
-	{
-		m_book.addBuyOrderToBook(order);
-	}
-	else if (orderAction == 'S')
-	{
-		m_book.addSellOrderToBook(order);
-	}
-	else
-	{
-		//TODO handle exception
-		std::cout << "Error: invalid orderAction on order" << order.m_orderId << std::endl;
-		std::cout << "DataManager::addOrderToBook()" << std::endl;
-	}
-}
-
-void DataManager::applyReduceOrder(const Order& order)
-{
-	//sort the buy data by ID
-	m_book.sortOrdersById('B');
-
-	//search through buy data for order.m_id
-	if (m_book.buyOrdersContainOrder(order))
-	{
-		//if found, reduce that number by order.m_size
-		m_book.reduceOrderInBuyList(order);
-	}
-	else
-	{
-		//sort the sell data by ID
-		m_book.sortOrdersById('S');
-	}
-
-	//search through sell data for order.m_id
-	if (m_book.sellOrdersContainOrder(order))
-	{
-		//if found, reduce that number by order.m_size
-		m_book.reduceOrderInSellList(order);
-	}
-	else
-	{
-		std::cout << "cannot reduce order. Order not found" << std::endl;
-	}
-}
 void DataManager::printOutputToConsole()
 {
 	//TODO: build string and output to console
