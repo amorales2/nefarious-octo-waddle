@@ -5,11 +5,15 @@
 #include <sstream>
 #include <memory>
 
+
 DataManager::DataManager(int targetSize)
 	: m_book(),
 	m_targetSize(targetSize),
-	m_BuyTargetReached(false),
-	m_SellTargetReached(false)
+	m_buyPrice(0.0),
+	m_sellPrice(0.0),
+	m_previousBuyTargetReached(false),
+	m_previousSellTargetReached(false)
+
 {
 }
 
@@ -17,51 +21,76 @@ DataManager::DataManager(int targetSize)
 Order DataManager::createOrder(const std::string& orderData)
 {
 	Order order;
+	//auto orderPtr = std::make_shared<Order>(order);
+
 	std::string temp;
 	std::istringstream test(orderData);
 
 	//timestamp
 	test >> temp;
-	std::cout << "substring: " << temp + "\n" << std::endl;
 	order.m_timestamp = std::stoi(temp);
 
 	//ordertype
 	test >> temp;
-	std::cout << "substring: " << temp + "\n" << std::endl;
 	order.m_orderType = temp.c_str()[0];
 
 	//orderId
 	test >> temp;
-	std::cout << "substring: " << temp + "\n" << std::endl;
 	order.m_orderId = temp;
 
 	//orderAction
 	test >> temp;
-	std::cout << "substring: " << temp + "\n" << std::endl;
 	order.m_orderAction = temp.c_str()[0];
 
 	//price
 	test >> temp;
-	std::cout << "substring: " << temp + "\n" << std::endl;
-	order.m_price = std::stod(temp);
+
+	//remove the decimal from the string
+	for (int i = 0;i < temp.length();++i)
+	{
+		if (temp.at(i) == '.')
+		{
+			temp = temp.substr(0, i) + temp.substr(i + 1, temp.size());
+		}
+	}
+	order.m_price = std::stoi(temp);
+
 
 	//size
 	test >> temp;
-	std::cout << "substring: " << temp + "\n" << std::endl;
 	order.m_size = std::stoi(temp);
+
+
 	return order;
 }
 
-void DataManager::addOrderToBook(std::shared_ptr<Order> order)
+void DataManager::addOrderToBook(OrderPtr order)
 {
-	
+	if (order->m_orderAction == 'B')
+	{
+		m_book.addBuyOrderToBook(order);
+	}
+	else if (order->m_orderAction == 'S')
+	{
+		m_book.addSellOrderToBook(order);
+	}
 }
 
-void DataManager::applyReduceOrder(std::shared_ptr<Order> order)
+void DataManager::applyReduceOrder(OrderPtr order)
 {
-
+	if (m_book.checkBuyMapForOrder(order))
+	{
+		m_book.reduceOrderInBuyMap(order);
+	}
+	else if (m_book.checkSellMapForOrder(order))
+	{
+		m_book.reduceOrderInSellMap(order);
+	}
+	else
+	{
+		std::cout << "Error: reduce order id " << order->m_orderId << " can't be found" << std::endl;
+	}
 }
-
 
 bool DataManager::targetSizeReached(const char & orderAction)
 {
@@ -75,7 +104,7 @@ bool DataManager::targetSizeReached(const char & orderAction)
 		}
 		return false;
 	case 'S':
-		if (m_book.getCurrentBuySize() >= m_targetSize)
+		if (m_book.getCurrentSellSize() >= m_targetSize)
 		{
 			return true;
 		}
@@ -86,18 +115,138 @@ bool DataManager::targetSizeReached(const char & orderAction)
 	}
 }
 
-void DataManager::printOutputToConsole()
+bool DataManager::previousTargetSizeReached(const char & orderType)
+{
+	switch (orderType)
+	{
+	case 'B':
+		if (m_previousBuyTargetReached)
+			return true;
+		return false;
+	case'S':
+		if (m_previousSellTargetReached)
+			return true;
+		return false;
+	default:
+		std::cout << "Error DataManager::previousTargetSizeReached, invalid orderType" << std::endl;
+	}
+	return false;
+}
+
+std::string DataManager::getOutputData(const char& action)
 {
 	//TODO: build string and output to console
+
+	if (action == 'B')
+	{
+		auto tempTimestamp = std::to_string(m_book.getLastOrderAdded()->m_timestamp);
+		auto tempPrice = std::to_string(getBuyPrice());
+		return (tempTimestamp + " S " + tempPrice + "\n");
+	}
+	else if (action == 'S')
+	{
+		auto tempTimestamp = std::to_string(m_book.getLastOrderAdded()->m_timestamp);
+		auto tempPrice = std::to_string(getSellPrice());
+		return (tempTimestamp + " B " + tempPrice + "\n");
+	}
+	else
+	{
+		std::cout << "Error DataManager::getOutputData, invalid action" << std::endl;
+		return "";
+	}
+}
+
+int DataManager::getTargetSize()
+{
+	return m_targetSize;
+}
+
+double DataManager::getBuyPrice()
+{
+	if (m_buyPrice == 0)
+	{
+		m_buyPrice = m_book.priceToBuyShares(m_targetSize);
+		return m_buyPrice;
+	}
+	return m_buyPrice;
+}
+
+double DataManager::getSellPrice()
+{
+	if (m_sellPrice == 0)
+	{
+		m_sellPrice = m_book.priceToSellShares(m_targetSize);
+		return m_sellPrice;
+	}
+	return m_sellPrice;
 }
 
 void DataManager::printOutputToFile(std::string fileName)
 {
 	//TODO: build string and output to file
+}
 
+void DataManager::makePriceCurrent(const char & action)
+{
+	switch (action)
+	{
+	case 'B':
+		m_previousBuyPrice = m_buyPrice;
+		m_buyPrice = 0;
+		break;
+	case 'S':
+		m_previousSellPrice = m_sellPrice;
+		m_sellPrice = 0;
+
+	default:
+		std::cout << "Error in DataManager::makePriceCurrent,  invalid action" << std::endl;
+		break;
+	}
+}
+
+void DataManager::makeTargetSizeCurrent(const char & action)
+{
+	switch (action)
+	{
+	case 'B':
+		m_previousBuyTargetReached = targetSizeReached(action);
+		break;
+	case 'S':
+		m_previousSellTargetReached = targetSizeReached(action);
+		break;
+	default:
+		std::cout << "Error in DataManager::makeTargetsizeCurrent,  invalid action" << std::endl;
+		break;
+	}
+}
+
+double DataManager::getPrice(const char & action)
+{
+	switch (action)
+	{
+	case 'B':
+		return getSellPrice();
+	case 'S':
+		return getBuyPrice();
+	default:
+		std::cout << "Error in DataManager::getPrice(), invalid action" << std::endl;
+		return 0.0;
+	}
 }
 
 void DataManager::setTargetSize(int targetSize)
 {
 	m_targetSize = targetSize;
+}
+double DataManager::getPreviousBuyPrice()
+{
+	return m_previousBuyPrice;
+}
+double DataManager::getPreviousSellPrice()
+{
+	return m_previousSellPrice;
+}
+char& DataManager::reduceOrderAction()
+{
+	return m_book.getLastReduceOrder()->m_orderAction;
 }

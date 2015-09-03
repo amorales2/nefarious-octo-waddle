@@ -3,47 +3,51 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <algorithm>
+#include "Order.h"
 
-struct Order;
+typedef std::pair<std::string, long long> orderPriceById;
+typedef std::shared_ptr<Order> OrderPtr;
 
 class Book
 {
 public:
 	Book();
-	//new functions taking in unique_ptr<Order>
-	void addBuyOrderToBook(std::shared_ptr<Order> order);
-	void addSellOrderToBook(std::shared_ptr<Order> order);
+	void addBuyOrderToBook(OrderPtr order);
+	void addSellOrderToBook(OrderPtr order);
 
-	void reduceOrderInBuyList(std::shared_ptr<Order> order);
-	void reduceOrderInSellList(std::shared_ptr<Order> order);
-
-	void removeOrderFromBuyList(std::string& orderId);
-	void removeOrderFromSellList(std::string& orderId);
+	void reduceOrderInBuyMap(OrderPtr order);
+	void reduceOrderInSellMap(OrderPtr order);
 
 	void sortBuyVectorByPrice();
 	void sortSellVectorByPrice();
 
-	double priceToBuyShares(int targetSize);
-	double priceToSellShares(int targetSize);
-	
+	long long priceToBuyShares(int targetSize);
+	long long priceToSellShares(int targetSize);
+
+	bool Book::checkBuyMapForOrder(const OrderPtr& order);
+	bool Book::checkSellMapForOrder(const OrderPtr& order);
+
 	//getter functions
 	int getCurrentBuySize();
 	int getCurrentSellSize();
+	OrderPtr getLastOrderAdded();
+	OrderPtr getLastReduceOrder();
 
 private:
 	int m_currentBuySize;
 	int m_currentSellSize;
 
+	OrderPtr m_lastOrderAdded;
+	OrderPtr m_lastReduceOrder;
+
 	//main data structure for orders
-	//orderPriceById.first = ID, orderPriceById.second = price
-	typedef std::pair<std::string, double> orderPriceById;
 	std::map<std::string, std::shared_ptr<Order>> m_buyOrdersById;
 	std::map<std::string, std::shared_ptr<Order>> m_sellOrdersById;
 	std::vector<orderPriceById> m_buyOrdersByPrice;
 	std::vector<orderPriceById> m_sellOrdersByPrice;
 
+	void removeBuyOrder(const std::string& orderId);
+	void removeSellOrder(const std::string& orderId);
 
-	//TODO: remove old
-	std::vector<Order> m_buyOrders;
-	std::vector<Order> m_sellOrders;
 };

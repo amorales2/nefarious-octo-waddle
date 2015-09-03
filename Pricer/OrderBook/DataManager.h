@@ -3,6 +3,7 @@
 #include "Book.h"
 #include <memory>
 struct Order;
+typedef std::shared_ptr<Order> OrderPtr;
 
 class DataManager
 {
@@ -10,28 +11,44 @@ public:
 	DataManager(int targetSize);
 
 	Order createOrder(const std::string& orderData);
-	
-	
+
 	//new functions with Unique_ptr
-	void addOrderToBook(std::shared_ptr<Order> order);
-	void applyReduceOrder(std::shared_ptr<Order> order);
-
-	//remove old
-	void addOrderToBook(const Order& order);
-	void applyReduceOrder(const Order& order);
-
-
+	void addOrderToBook(OrderPtr order);
+	void applyReduceOrder(OrderPtr order);
 	void setTargetSize(int targetSize);
 
-	//TODO
-	void printOutputToConsole();
+	std::string getOutputData(const char& action);
 	bool targetSizeReached(const char& orderType);
+	bool previousTargetSizeReached(const char& orderType);
+
+	//TODO: name this something else
 	void printOutputToFile(std::string fileName);
-	int DataManager::getTargetSize() { return m_targetSize; }
+
+	//TODO
+	void makePriceCurrent(const char & action);
+	void makeTargetSizeCurrent(const char & action);
+	double getPrice(const char& action);
+
+	int DataManager::getTargetSize();
+	double DataManager::getBuyPrice();
+	double DataManager::getSellPrice();
+	double DataManager::getPreviousBuyPrice();
+	double DataManager::getPreviousSellPrice();
+	char& reduceOrderAction();
 
 private:
 	Book m_book;
 	int m_targetSize;
-	bool m_SellTargetReached;
-	bool m_BuyTargetReached;
+
+	//for tracking price
+	long long m_previousBuyPrice;
+	long long m_previousSellPrice;
+
+	long long m_buyPrice;
+	long long m_sellPrice;
+
+	bool m_previousBuyTargetReached;
+	bool m_previousSellTargetReached;
+
+
 };
