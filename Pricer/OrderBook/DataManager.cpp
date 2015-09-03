@@ -161,7 +161,7 @@ int DataManager::getTargetSize()
 	return m_targetSize;
 }
 
-double DataManager::getBuyPrice()
+long long DataManager::getBuyPrice()
 {
 	if (m_buyPrice == 0)
 	{
@@ -171,7 +171,7 @@ double DataManager::getBuyPrice()
 	return m_buyPrice;
 }
 
-double DataManager::getSellPrice()
+long long DataManager::getSellPrice()
 {
 	if (m_sellPrice == 0)
 	{
@@ -220,7 +220,7 @@ void DataManager::makeTargetSizeCurrent(const char & action)
 	}
 }
 
-double DataManager::getPrice(const char & action)
+long long DataManager::getPrice(const char & action)
 {
 	switch (action)
 	{
@@ -230,7 +230,7 @@ double DataManager::getPrice(const char & action)
 		return getBuyPrice();
 	default:
 		std::cout << "Error in DataManager::getPrice(), invalid action" << std::endl;
-		return 0.0;
+		return 0;
 	}
 }
 
@@ -238,11 +238,11 @@ void DataManager::setTargetSize(int targetSize)
 {
 	m_targetSize = targetSize;
 }
-double DataManager::getPreviousBuyPrice()
+long long DataManager::getPreviousBuyPrice()
 {
 	return m_previousBuyPrice;
 }
-double DataManager::getPreviousSellPrice()
+long long DataManager::getPreviousSellPrice()
 {
 	return m_previousSellPrice;
 }

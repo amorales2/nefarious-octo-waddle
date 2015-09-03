@@ -84,11 +84,8 @@ void Book::removeBuyOrder(const std::string& orderId)
 	auto tempPrice = m_buyOrdersById[orderId]->m_price;
 	orderPriceById tempPair(tempID, tempPrice);
 
-	auto it = std::lower_bound(m_buyOrdersByPrice.begin(), m_buyOrdersByPrice.end(), tempPair,
-		[](const orderPriceById& order1, const orderPriceById& order2)
-	{
-		return order1.second < order2.second;
-	});
+	auto it = std::find(m_buyOrdersByPrice.begin(), m_buyOrdersByPrice.end(), tempPair);
+
 	std::iter_swap(it, m_buyOrdersByPrice.end() - 1);
 	m_buyOrdersByPrice.pop_back();
 
@@ -103,11 +100,8 @@ void Book::removeSellOrder(const std::string& orderId)
 	auto tempPrice = m_sellOrdersById[orderId]->m_price;
 	orderPriceById tempPair(tempID, tempPrice);
 
-	auto it = std::lower_bound(m_sellOrdersByPrice.begin(), m_sellOrdersByPrice.end(), tempPair,
-		[](const orderPriceById& order1, const orderPriceById& order2)
-	{
-		return order1.second < order2.second;
-	});
+	auto it = std::find(m_sellOrdersByPrice.begin(), m_sellOrdersByPrice.end(), tempPair);
+
 	std::iter_swap(it, m_sellOrdersByPrice.end() - 1);
 	m_sellOrdersByPrice.pop_back();
 

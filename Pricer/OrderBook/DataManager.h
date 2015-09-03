@@ -27,13 +27,13 @@ public:
 	//TODO
 	void makePriceCurrent(const char & action);
 	void makeTargetSizeCurrent(const char & action);
-	double getPrice(const char& action);
+	long long getPrice(const char& action);
 
 	int DataManager::getTargetSize();
-	double DataManager::getBuyPrice();
-	double DataManager::getSellPrice();
-	double DataManager::getPreviousBuyPrice();
-	double DataManager::getPreviousSellPrice();
+	long long DataManager::getBuyPrice();
+	long long DataManager::getSellPrice();
+	long long DataManager::getPreviousBuyPrice();
+	long long DataManager::getPreviousSellPrice();
 	char& reduceOrderAction();
 
 private:
