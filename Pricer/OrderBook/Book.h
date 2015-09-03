@@ -7,17 +7,18 @@
 #include "Order.h"
 
 typedef std::pair<std::string, long long> orderPriceById;
+typedef std::map<std::string, std::shared_ptr<Order>> orderMapById;
 typedef std::shared_ptr<Order> OrderPtr;
 
 class Book
 {
 public:
 	Book();
-	void addBuyOrderToBook(OrderPtr order);
-	void addSellOrderToBook(OrderPtr order);
+	void addBuyOrderToBook(const OrderPtr& order);
+	void addSellOrderToBook(const OrderPtr& order);
 
-	void reduceOrderInBuyMap(OrderPtr order);
-	void reduceOrderInSellMap(OrderPtr order);
+	void reduceOrderInBuyMap(const OrderPtr& order);
+	void reduceOrderInSellMap(const OrderPtr& order);
 
 	void sortBuyVectorByPrice();
 	void sortSellVectorByPrice();
@@ -25,14 +26,17 @@ public:
 	long long priceToBuyShares(int targetSize);
 	long long priceToSellShares(int targetSize);
 
-	bool Book::checkBuyMapForOrder(const OrderPtr& order);
-	bool Book::checkSellMapForOrder(const OrderPtr& order);
-
 	//getter functions
 	int getCurrentBuySize();
 	int getCurrentSellSize();
 	OrderPtr getLastOrderAdded();
 	OrderPtr getLastReduceOrder();
+
+	//main data structure for orders
+	orderMapById m_buyOrdersById;
+	orderMapById m_sellOrdersById;
+	std::vector<orderPriceById> m_buyOrdersByPrice;
+	std::vector<orderPriceById> m_sellOrdersByPrice;
 
 private:
 	int m_currentBuySize;
@@ -41,11 +45,7 @@ private:
 	OrderPtr m_lastOrderAdded;
 	OrderPtr m_lastReduceOrder;
 
-	//main data structure for orders
-	std::map<std::string, std::shared_ptr<Order>> m_buyOrdersById;
-	std::map<std::string, std::shared_ptr<Order>> m_sellOrdersById;
-	std::vector<orderPriceById> m_buyOrdersByPrice;
-	std::vector<orderPriceById> m_sellOrdersByPrice;
+	
 
 	void removeBuyOrder(const std::string& orderId);
 	void removeSellOrder(const std::string& orderId);

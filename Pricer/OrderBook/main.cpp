@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 		{
 			//add order to the book
 			dataManager.addOrderToBook(tempOrder);
-			char& tempOrderAction = tempOrder->m_orderAction;
+			const char& tempOrderAction = tempOrder->m_orderAction;
 			
 			//check if the targetSize had been reached
 			if(dataManager.targetSizeReached(tempOrderAction))
@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 					if (tempPrice != dataManager.getPreviousSellPrice())
 					{
 						std::cout << dataManager.getOutputData(tempOrderAction);
+
 						//set current price to previous price
 						dataManager.makePriceCurrent(tempOrderAction);
 						dataManager.makeTargetSizeCurrent(tempOrderAction);
@@ -58,11 +59,17 @@ int main(int argc, char *argv[])
 					std::cout << "Error, Invalid tempOrderAction in main"<<std::endl;
 				}
 			}	
+			//targetSize is not longer reached
+			else if(dataManager.previousTargetSizeReached(tempOrderAction))
+			{	
+				std::cout << tempOrder->m_timestamp << " "+tempOrderAction << " N/A" << std::endl; 
+				break;	
+			}
 		}
 		else if (tempOrder->m_orderType == 'R')//reduce order
 		{
 			dataManager.applyReduceOrder(tempOrder);
-			char& tempOrderAction = dataManager.reduceOrderAction();
+			const char& tempOrderAction = dataManager.reduceOrderAction();
 
 			//check if the targetSize had been reached previously
 			if (dataManager.previousTargetSizeReached(tempOrder->m_orderAction))
@@ -101,7 +108,7 @@ int main(int argc, char *argv[])
 						break;
 					}
 
-					//get the BUY price
+					//get the price
 					tempPrice = dataManager.getSellPrice();
 
 					//if the data is not the same as the previous output, then we can print

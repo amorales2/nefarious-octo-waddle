@@ -9,7 +9,7 @@ Book::Book()
 {
 }
 
-void Book::addBuyOrderToBook(OrderPtr order)
+void Book::addBuyOrderToBook(const OrderPtr& order)
 {
 	//place in map
 	m_buyOrdersById[order->m_orderId] = order;
@@ -24,7 +24,7 @@ void Book::addBuyOrderToBook(OrderPtr order)
 	m_lastOrderAdded = order;
 }
 
-void Book::addSellOrderToBook(OrderPtr order)
+void Book::addSellOrderToBook(const OrderPtr& order)
 {
 	//place in map
 	m_sellOrdersById[order->m_orderId] = order;
@@ -39,7 +39,7 @@ void Book::addSellOrderToBook(OrderPtr order)
 	m_lastOrderAdded = order;
 }
 
-void Book::reduceOrderInBuyMap(OrderPtr order)
+void Book::reduceOrderInBuyMap(const OrderPtr& order)
 {
 	m_lastReduceOrder = order;
 	m_lastReduceOrder->m_orderAction = m_buyOrdersById.at(order->m_orderId)->m_orderAction;
@@ -59,7 +59,7 @@ void Book::reduceOrderInBuyMap(OrderPtr order)
 	}
 }
 
-void Book::reduceOrderInSellMap(OrderPtr order)
+void Book::reduceOrderInSellMap(const OrderPtr& order)
 {
 	m_lastReduceOrder = order;
 	m_lastReduceOrder->m_orderAction = m_sellOrdersById.at(order->m_orderId)->m_orderAction;
@@ -116,7 +116,7 @@ void Book::sortBuyVectorByPrice()
 	std::sort(m_buyOrdersByPrice.begin(), m_buyOrdersByPrice.end(),
 		[](const orderPriceById& lhs, const orderPriceById& rhs)
 	{
-		return(lhs.second < rhs.second);
+		return(lhs.second > rhs.second);
 	});
 }
 
@@ -126,53 +126,25 @@ void Book::sortSellVectorByPrice()
 	std::sort(m_sellOrdersByPrice.begin(), m_sellOrdersByPrice.end(),
 		[](const orderPriceById& lhs, const orderPriceById& rhs)
 	{
-		return(lhs.second > rhs.second);
+		return(lhs.second < rhs.second);
 	});
-}
-
-bool Book::checkBuyMapForOrder(const OrderPtr& order)
-{
-	auto it = m_buyOrdersById.find(order->m_orderId);
-	if (it != m_buyOrdersById.end())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool Book::checkSellMapForOrder(const OrderPtr& order)
-{
-	auto it = m_sellOrdersById.find(order->m_orderId);
-	if (it != m_sellOrdersById.end())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 long long Book::priceToSellShares(int targetSize)
 {
 	//When BUYING shares, we want to purchase the LEAST expensive first from the SELL list
 
-	auto totalPrice = 0;
-	auto tempPrice = 0;
-	auto counter = 0;
+	long long totalPrice = 0;
+	long long tempPrice = 0;
+	int counter = 0;
 	int tempSize;
 	std::string tempId;
 
 	//sort the sell vector by price
 	sortSellVectorByPrice();
 
-	while (true)
+	while (!(counter>=m_sellOrdersByPrice.size()) && targetSize>0)
 	{
-		assert(m_sellOrdersByPrice.at(counter).second);// failing here
-
 		tempPrice = m_sellOrdersByPrice.at(counter).second;
 		tempId = m_sellOrdersByPrice.at(counter).first;
 		tempSize = m_sellOrdersById[tempId]->m_size;
@@ -181,7 +153,7 @@ long long Book::priceToSellShares(int targetSize)
 		if (tempSize <= targetSize)
 		{
 			targetSize -= tempSize;
-			totalPrice += tempPrice + (tempSize*tempPrice);
+			totalPrice += (tempSize*tempPrice);
 		}
 		else
 		{
@@ -189,9 +161,6 @@ long long Book::priceToSellShares(int targetSize)
 			targetSize = 0;
 		}
 		++counter;
-
-		//if the target size has reached zero, we are done buying
-		if (targetSize <= 0) break;
 	}
 
 	return totalPrice;
@@ -201,19 +170,17 @@ long long Book::priceToBuyShares(int targetSize)
 {
 	//When SELLING shares, we want to sell the MOST expensive first from the BUY list
 
-	auto totalPrice = 0;
-	auto tempPrice = 0;
+	long long totalPrice = 0;
+	long long tempPrice = 0;
 	int counter = 0;
 	int tempSize;
 	std::string tempId;
 
 	//sort the sell vector by price
-	sortSellVectorByPrice();
+	sortBuyVectorByPrice();
 
-	while (true)
+	while (!(counter >= m_buyOrdersByPrice.size()) && targetSize>0)
 	{
-		assert(m_buyOrdersByPrice.at(counter).second);
-
 		tempPrice = m_buyOrdersByPrice.at(counter).second;
 		tempId = m_buyOrdersByPrice.at(counter).first;
 		tempSize = m_buyOrdersById[tempId]->m_size;
@@ -222,7 +189,7 @@ long long Book::priceToBuyShares(int targetSize)
 		if (tempSize <= targetSize)
 		{
 			targetSize -= tempSize;
-			totalPrice += tempPrice + (tempSize*tempPrice);
+			totalPrice += (tempSize*tempPrice);
 		}
 		else
 		{
@@ -230,9 +197,6 @@ long long Book::priceToBuyShares(int targetSize)
 			targetSize = 0;
 		}
 		++counter;
-
-		//if the target size has reached zero, we are done buying
-		if (targetSize <= 0) break;
 	}
 
 	return totalPrice;

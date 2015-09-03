@@ -46,13 +46,7 @@ Order DataManager::createOrder(const std::string& orderData)
 	test >> temp;
 
 	//remove the decimal from the string
-	for (int i = 0;i < temp.length();++i)
-	{
-		if (temp.at(i) == '.')
-		{
-			temp = temp.substr(0, i) + temp.substr(i + 1, temp.size());
-		}
-	}
+	temp.erase(std::remove(temp.begin(), temp.end(), '.'), temp.end());
 	order.m_price = std::stoi(temp);
 
 
@@ -78,18 +72,25 @@ void DataManager::addOrderToBook(OrderPtr order)
 
 void DataManager::applyReduceOrder(OrderPtr order)
 {
-	if (m_book.checkBuyMapForOrder(order))
+
+	//search for order in buyMap first
+	auto it = m_book.m_buyOrdersById.find(order->m_orderId);
+	if (it != m_book.m_buyOrdersById.end())
 	{
 		m_book.reduceOrderInBuyMap(order);
+		return;
 	}
-	else if (m_book.checkSellMapForOrder(order))
+
+	//search for order in sellMap
+	it = m_book.m_sellOrdersById.find(order->m_orderId);
+	if (it != m_book.m_sellOrdersById.end())
 	{
 		m_book.reduceOrderInSellMap(order);
+		return;
 	}
-	else
-	{
-		std::cout << "Error: reduce order id " << order->m_orderId << " can't be found" << std::endl;
-	}
+
+	std::cout << "Error: reduce order id " << order->m_orderId << " can't be found" << std::endl;
+
 }
 
 bool DataManager::targetSizeReached(const char & orderAction)
@@ -197,7 +198,7 @@ void DataManager::makePriceCurrent(const char & action)
 	case 'S':
 		m_previousSellPrice = m_sellPrice;
 		m_sellPrice = 0;
-
+		break;
 	default:
 		std::cout << "Error in DataManager::makePriceCurrent,  invalid action" << std::endl;
 		break;
