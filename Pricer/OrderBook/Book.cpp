@@ -136,32 +136,26 @@ long long Book::priceToSellShares(long long targetSize)
 	//When BUYING shares, we want to purchase the LEAST expensive first from the SELL list
 
 	long long totalPrice = 0;
-	long long tempPrice = 0;
 	long long counter = 0;
-	long long tempSize;
+	long long tempSize = 0;
 	std::string tempId;
+	long long currentPrice = 0;
 
 	//sort the sell vector by price
 	sortSellVectorByPrice();
 
-	while (counter < m_sellOrdersByPrice.size() && targetSize>0)
+	for (auto it = m_sellOrdersByPrice.begin(); it != m_sellOrdersByPrice.end(); ++it)
 	{
-		tempPrice = m_sellOrdersByPrice.at(counter).second;
-		tempId = m_sellOrdersByPrice.at(counter).first;
-		tempSize = m_sellOrdersById[tempId]->m_size;
+		int sizeConsumed = m_sellOrdersById[it->first]->m_size;
 
-		//if the amount of shares is less than the remaining targetSize
-		if (tempSize <= targetSize)
+		if (targetSize <= sizeConsumed)
 		{
-			targetSize -= tempSize;
-			totalPrice += (tempSize*tempPrice);
+			totalPrice += it->second * targetSize;
+			break;
 		}
-		else
-		{
-			totalPrice += (targetSize*tempPrice);
-			targetSize = 0;
-		}
-		++counter;
+
+		targetSize -= sizeConsumed;
+		totalPrice += it->second * sizeConsumed;
 	}
 
 	return totalPrice;
@@ -172,32 +166,26 @@ long long Book::priceToBuyShares(long long targetSize)
 	//When SELLING shares, we want to sell the MOST expensive first from the BUY list
 
 	long long totalPrice = 0;
-	long long tempPrice = 0;
 	long long counter = 0;
-	long long tempSize;
+	long long tempSize = 0;
 	std::string tempId;
+	long long currentPrice = 0;
 
 	//sort the sell vector by price
 	sortBuyVectorByPrice();
 
-	while (counter < m_buyOrdersByPrice.size() && targetSize > 0)
+	for (auto it = m_buyOrdersByPrice.begin(); it != m_buyOrdersByPrice.end(); ++it)
 	{
-		tempPrice = m_buyOrdersByPrice.at(counter).second;
-		tempId = m_buyOrdersByPrice.at(counter).first;
-		tempSize = m_buyOrdersById[tempId]->m_size;
+		int sizeConsumed = m_buyOrdersById[it->first]->m_size;
 
-		//if the amount of shares is less than the remaining targetSize
-		if (tempSize <= targetSize)
+		if (targetSize <= sizeConsumed)
 		{
-			targetSize -= tempSize;
-			totalPrice += (tempSize*tempPrice);
+			totalPrice += it->second * targetSize;
+			break;
 		}
-		else
-		{
-			totalPrice += (targetSize*tempPrice);
-			targetSize = 0;
-		}
-		++counter;
+
+		targetSize -= sizeConsumed;
+		totalPrice += it->second * sizeConsumed;
 	}
 
 	return totalPrice;

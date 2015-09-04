@@ -12,8 +12,9 @@ DataManager::DataManager(long long targetSize)
 	m_buyPrice(0),
 	m_sellPrice(0),
 	m_previousBuyTargetReached(false),
-	m_previousSellTargetReached(false)
-
+	m_previousSellTargetReached(false),
+	m_previousBuyPrice(0),
+	m_previousSellPrice(0)
 {
 }
 
@@ -93,21 +94,12 @@ void DataManager::applyReduceOrder(OrderPtr& order)
 
 bool DataManager::targetSizeReached(const char & orderAction)
 {
-
 	switch (orderAction)
 	{
 	case 'B':
-		if (m_book.getCurrentBuySize() >= m_targetSize)
-		{
-			return true;
-		}
-		return false;
+		return m_book.getCurrentBuySize() >= m_targetSize;
 	case 'S':
-		if (m_book.getCurrentSellSize() >= m_targetSize)
-		{
-			return true;
-		}
-		return false;
+		return m_book.getCurrentSellSize() >= m_targetSize;
 	default:
 		std::cout << "Error, invalid orderType" << std::endl;
 		return false;
@@ -119,17 +111,13 @@ bool DataManager::previousTargetSizeReached(const char & orderType)
 	switch (orderType)
 	{
 	case 'B':
-		if (m_previousBuyTargetReached)
-			return true;
-		return false;
+		return m_previousBuyTargetReached;
 	case'S':
-		if (m_previousSellTargetReached)
-			return true;
-		return false;
+		return m_previousSellTargetReached;
 	default:
 		std::cout << "Error DataManager::previousTargetSizeReached, invalid orderType" << std::endl;
+		return false;
 	}
-	return false;
 }
 
 std::string DataManager::getOutputData(const char& action)
@@ -162,22 +150,12 @@ long long DataManager::getTargetSize()
 
 long long DataManager::getBuyPrice()
 {
-	if (m_buyPrice == 0)
-	{
-		m_buyPrice = m_book.priceToBuyShares(m_targetSize);
-		return m_buyPrice;
-	}
-	return m_buyPrice;
+	return m_buyPrice = m_book.priceToBuyShares(m_targetSize);
 }
 
 long long DataManager::getSellPrice()
 {
-	if (m_sellPrice == 0)
-	{
-		m_sellPrice = m_book.priceToSellShares(m_targetSize);
-		return m_sellPrice;
-	}
-	return m_sellPrice;
+	return m_sellPrice = m_book.priceToSellShares(m_targetSize);
 }
 
 void DataManager::printOutputToFile(std::string fileName)
@@ -185,51 +163,63 @@ void DataManager::printOutputToFile(std::string fileName)
 	//TODO: build string and output to file
 }
 
-void DataManager::makePriceCurrent(const char & action)
+bool DataManager::updateTargetSizeReached(const char & action)
 {
 	switch (action)
 	{
 	case 'B':
-		m_previousBuyPrice = m_buyPrice;
-		m_buyPrice = 0;
-		break;
+		{
+			bool newTargetSizeReached = targetSizeReached(action);
+			if (m_previousBuyTargetReached == newTargetSizeReached)
+			{
+				m_previousBuyTargetReached = newTargetSizeReached;
+				return true;
+			}
+			return false;
+		}
 	case 'S':
-		m_previousSellPrice = m_sellPrice;
-		m_sellPrice = 0;
-		break;
-	default:
-		std::cout << "Error in DataManager::makePriceCurrent,  invalid action" << std::endl;
-		break;
-	}
-}
-
-void DataManager::makeTargetSizeCurrent(const char & action)
-{
-	switch (action)
-	{
-	case 'B':
-		m_previousBuyTargetReached = targetSizeReached(action);
-		break;
-	case 'S':
-		m_previousSellTargetReached = targetSizeReached(action);
-		break;
+		{
+			bool newTargetSizeReached = targetSizeReached(action);
+			if (m_previousBuyTargetReached == newTargetSizeReached)
+			{
+				m_previousBuyTargetReached = newTargetSizeReached;
+				return true;
+			}
+			return false;
+		}
 	default:
 		std::cout << "Error in DataManager::makeTargetsizeCurrent,  invalid action" << std::endl;
-		break;
+		return false;
 	}
 }
 
-long long DataManager::getPrice(const char & action)
+bool DataManager::updatePrice(const char& action)
 {
 	switch (action)
 	{
 	case 'S':
-		return getSellPrice();
+		{
+			long long newPrice = m_book.priceToSellShares(m_targetSize);
+			if (m_previousSellPrice != newPrice)
+			{
+				m_previousSellPrice = newPrice;
+				return true;
+			}
+			return false;
+		}
 	case 'B':
-		return getBuyPrice();
+		{
+			long long newPrice = m_book.priceToBuyShares(m_targetSize);
+			if (m_previousBuyPrice != newPrice)
+			{
+				m_previousBuyPrice= newPrice;
+				return true;
+			}
+			return false;
+		}
 	default:
-		std::cout << "Error in DataManager::getPrice(), invalid action" << std::endl;
-		return 0;
+			std::cout << "Error in DataManager::getPrice(), invalid action" << std::endl;
+			return false;
 	}
 }
 

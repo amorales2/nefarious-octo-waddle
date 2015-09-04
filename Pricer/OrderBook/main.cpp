@@ -4,16 +4,6 @@
 #include <memory>
 #include "DataManager.h"
 
-
-static void outputToFile(std::ofstream outputFile, const std::string& text)
-{
-
-	outputFile.close();
-}
-
-
-
-
 int main(int argc, char *argv[])
 {
 	std::ofstream outputFile;
@@ -40,18 +30,12 @@ int main(int argc, char *argv[])
 				//check if the targetSize had been reached
 				if (dataManager.targetSizeReached(tempOrderAction))
 				{
-					//get the price
-					auto tempPrice = dataManager.getPrice(tempOrderAction);
-
 					//if the data is not the same as the previous output, then we can print
-					if (tempPrice != dataManager.getPreviousPrice(tempOrderAction))
+					if (dataManager.updatePrice(tempOrderAction))
 					{
 						//output data
 						std::cout << dataManager.getOutputData(tempOrderAction);
-						//outputFile << dataManager.getOutputData(tempOrderAction);
-						//set current price to previous price
-						dataManager.makePriceCurrent(tempOrderAction);
-						dataManager.makeTargetSizeCurrent(tempOrderAction);			
+						dataManager.updateTargetSizeReached(tempOrderAction);
 					}
 				}
 
@@ -59,11 +43,8 @@ int main(int argc, char *argv[])
 				else if (dataManager.previousTargetSizeReached(tempOrderAction))
 				{
 					//output data
-					std::cout << tempOrder->m_timestamp << " " + tempOrderAction << " N/A" << std::endl;
-					//outputFile << (tempOrder->m_timestamp + " " + std::to_string(tempOrderAction) + " N/A")<< std::endl;
-					//set current price to previous price
-					dataManager.makePriceCurrent(tempOrderAction);
-					dataManager.makeTargetSizeCurrent(tempOrderAction);		
+					//std::cout << tempOrder->m_timestamp << " " + tempOrderAction << " N/A" << std::endl;
+					dataManager.updateTargetSizeReached(tempOrderAction);
 				}
 			}
 			else if (tempOrder->m_orderType == 'R')//reduce order
@@ -75,30 +56,25 @@ int main(int argc, char *argv[])
 				if (dataManager.targetSizeReached(tempOrderAction))
 				{
 
-					//get the price
-					auto tempPrice = dataManager.getPrice(tempOrderAction);
-
 					//if the data is not the same as the previous output, then we can print
-					if (tempPrice != dataManager.getPreviousPrice(tempOrderAction))
+					if (dataManager.updatePrice(tempOrderAction))
 					{
 						//output data
 						std::cout << dataManager.getOutputData(tempOrderAction);
 						//outputFile << dataManager.getOutputData(tempOrderAction);
 						//set current price to previous price
-						dataManager.makePriceCurrent(tempOrderAction);
-						dataManager.makeTargetSizeCurrent(tempOrderAction);
+						dataManager.updateTargetSizeReached(tempOrderAction);
 					}
 				}
 				//targetSize is no longer reached
 				else if (dataManager.previousTargetSizeReached(tempOrderAction))
 				{
 					//output data
-					std::cout << tempOrder->m_timestamp << " " << ((tempOrderAction=='B') ? "S" : "B") << " N/A" << std::endl;
+					//std::cout << tempOrder->m_timestamp << " " << ((tempOrderAction=='B') ? "S" : "B") << " N/A" << std::endl;
 					//outputFile << std::to_string(tempOrder->m_timestamp) + " " + ((tempOrderAction == 'B') ? "S" : "B") + " N/A" << std::endl;
 					
 					//set current price to previous price
-					dataManager.makePriceCurrent(tempOrderAction);
-					dataManager.makeTargetSizeCurrent(tempOrderAction);
+					dataManager.updateTargetSizeReached(tempOrderAction);
 				}
 			}
 		}

@@ -25,15 +25,16 @@ public:
 	void printOutputToFile(std::string fileName);
 
 	//TODO
-	void makePriceCurrent(const char & action);
-	void makeTargetSizeCurrent(const char & action);
-	long long getPrice(const char& action);
+	bool updateTargetSizeReached(const char & action);
+	bool updatePrice(const char& action);
 
-	long long DataManager::getTargetSize();
-	long long DataManager::getBuyPrice();
-	long long DataManager::getSellPrice();
-	long long DataManager::getPreviousPrice(const char& action);
+	long long getTargetSize();
+	long long getBuyPrice();
+	long long getSellPrice();
+	long long getPreviousPrice(const char& action);
 	char& reduceOrderAction();
+	long long getPreviousBuyPrice() { return m_previousBuyPrice; }
+	long long getPreviousSellPrice() { return m_previousSellPrice; }
 
 private:
 	Book m_book;
