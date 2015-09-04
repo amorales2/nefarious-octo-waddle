@@ -6,7 +6,7 @@
 #include <memory>
 
 
-DataManager::DataManager(int targetSize)
+DataManager::DataManager(long long targetSize)
 	: m_book(),
 	m_targetSize(targetSize),
 	m_buyPrice(0.0),
@@ -21,7 +21,7 @@ DataManager::DataManager(int targetSize)
 Order DataManager::createOrder(const std::string& orderData)
 {
 	Order order;
-	//auto orderPtr = std::make_shared<Order>(order);
+	auto orderPtr = std::make_shared<Order>(order);
 
 	std::string temp;
 	std::istringstream test(orderData);
@@ -47,13 +47,11 @@ Order DataManager::createOrder(const std::string& orderData)
 
 	//remove the decimal from the string
 	temp.erase(std::remove(temp.begin(), temp.end(), '.'), temp.end());
-	order.m_price = std::stoi(temp);
-
-
+	order.m_price = std::stoll(temp);
+	
 	//size
 	test >> temp;
-	order.m_size = std::stoi(temp);
-
+	order.m_size = std::stoll(temp);
 
 	return order;
 }
@@ -157,7 +155,7 @@ std::string DataManager::getOutputData(const char& action)
 	}
 }
 
-int DataManager::getTargetSize()
+long long DataManager::getTargetSize()
 {
 	return m_targetSize;
 }
@@ -235,7 +233,7 @@ long long DataManager::getPrice(const char & action)
 	}
 }
 
-void DataManager::setTargetSize(int targetSize)
+void DataManager::setTargetSize(long long targetSize)
 {
 	m_targetSize = targetSize;
 }

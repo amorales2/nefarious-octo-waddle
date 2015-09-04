@@ -23,12 +23,12 @@ public:
 	void sortBuyVectorByPrice();
 	void sortSellVectorByPrice();
 
-	long long priceToBuyShares(int targetSize);
-	long long priceToSellShares(int targetSize);
+	long long priceToBuyShares(long long targetSize);
+	long long priceToSellShares(long long targetSize);
 
 	//getter functions
-	int getCurrentBuySize();
-	int getCurrentSellSize();
+	long long getCurrentBuySize();
+	long long getCurrentSellSize();
 	OrderPtr& getLastOrderAdded();
 	OrderPtr& getLastReduceOrder();
 
@@ -39,8 +39,8 @@ public:
 	std::vector<orderPriceById> m_sellOrdersByPrice;
 
 private:
-	int m_currentBuySize;
-	int m_currentSellSize;
+	long long m_currentBuySize;
+	long long m_currentSellSize;
 
 	OrderPtr m_lastOrderAdded;
 	OrderPtr m_lastReduceOrder;

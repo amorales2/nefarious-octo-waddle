@@ -9,7 +9,7 @@ struct Order
 	std::string m_orderId;//unique identifier for an order
 	char m_orderAction;//previously m_side. Buy or Sell
 	long long m_price;
-	int m_size;
+	long long m_size;
 	
 	Order();
 	~Order();

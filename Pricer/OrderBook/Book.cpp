@@ -46,13 +46,15 @@ void Book::reduceOrderInBuyMap(const OrderPtr& order)
 
 
 	//reduce size
-	m_currentBuySize -= m_buyOrdersById[order->m_orderId]->m_size;
+	//m_currentBuySize -= m_buyOrdersById[order->m_orderId]->m_size;
+	m_currentBuySize = m_currentBuySize - order->m_size;
 
 	//reduce the order in BUY map by looking up its ID
-	m_buyOrdersById.at(order->m_orderId)->m_size -= order->m_size;
+	m_buyOrdersById.at(order->m_orderId)->m_size = m_buyOrdersById.at(order->m_orderId)->m_size- order->m_size;
 
 	//check that the order hasnt dropped to ZERO
-	if (m_buyOrdersById.at(order->m_orderId)->m_size <= 0)
+
+	if(m_buyOrdersById[order->m_orderId]->m_size<=0)
 	{
 		//delete order from map
 		removeBuyOrder(order->m_orderId);
@@ -65,10 +67,11 @@ void Book::reduceOrderInSellMap(const OrderPtr& order)
 	m_lastReduceOrder->m_orderAction = m_sellOrdersById.at(order->m_orderId)->m_orderAction;
 
 	//reduce size
-	m_currentSellSize -= m_sellOrdersById[order->m_orderId]->m_size;
+	m_currentSellSize = m_currentSellSize - order-> m_size;
 
 	//reduce the order in SELL map by looking up its ID
 	m_sellOrdersById[order->m_orderId]->m_size -= order->m_size;
+	m_sellOrdersById.at(order->m_orderId)->m_size = m_sellOrdersById.at(order->m_orderId)->m_size - order->m_size;
 
 	//check that the order has not dropped to ZERO
 	if (m_sellOrdersById[order->m_orderId]->m_size <= 0)
@@ -85,7 +88,7 @@ void Book::removeBuyOrder(const std::string& orderId)
 
 	auto it = std::find(m_buyOrdersByPrice.begin(), m_buyOrdersByPrice.end(), tempPair);
 
-	std::iter_swap(it, m_buyOrdersByPrice.end() - 1);
+	std::iter_swap(it, m_buyOrdersByPrice.end()-1);
 	m_buyOrdersByPrice.pop_back();
 
 	//delete from map
@@ -101,7 +104,7 @@ void Book::removeSellOrder(const std::string& orderId)
 
 	auto it = std::find(m_sellOrdersByPrice.begin(), m_sellOrdersByPrice.end(), tempPair);
 
-	std::iter_swap(it, m_sellOrdersByPrice.end() - 1);
+	std::iter_swap(it, m_sellOrdersByPrice.end()-1);
 	m_sellOrdersByPrice.pop_back();
 
 	//delete from map
@@ -129,14 +132,14 @@ void Book::sortSellVectorByPrice()
 	});
 }
 
-long long Book::priceToSellShares(int targetSize)
+long long Book::priceToSellShares(long long targetSize)
 {
 	//When BUYING shares, we want to purchase the LEAST expensive first from the SELL list
 
 	long long totalPrice = 0;
 	long long tempPrice = 0;
-	int counter = 0;
-	int tempSize;
+	long long counter = 0;
+	long long tempSize;
 	std::string tempId;
 
 	//sort the sell vector by price
@@ -165,14 +168,14 @@ long long Book::priceToSellShares(int targetSize)
 	return totalPrice;
 }
 
-long long Book::priceToBuyShares(int targetSize)
+long long Book::priceToBuyShares(long long targetSize)
 {
 	//When SELLING shares, we want to sell the MOST expensive first from the BUY list
 
 	long long totalPrice = 0;
 	long long tempPrice = 0;
-	int counter = 0;
-	int tempSize;
+	long long counter = 0;
+	long long tempSize;
 	std::string tempId;
 
 	//sort the sell vector by price
@@ -210,11 +213,11 @@ OrderPtr& Book::getLastReduceOrder()
 {
 	return m_lastReduceOrder;
 }
-int Book::getCurrentBuySize()
+long long Book::getCurrentBuySize()
 {
 	return m_currentBuySize;
 }
-int Book::getCurrentSellSize()
+long long Book::getCurrentSellSize()
 {
 	return m_currentSellSize;
 }
