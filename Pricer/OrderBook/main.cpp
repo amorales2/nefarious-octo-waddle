@@ -12,123 +12,83 @@ int main(int argc, char *argv[])
 	std::string line;
 	DataManager dataManager(targetSize);
 
-	if(file.is_open())
-	while(getline(file,line))
-	{
-		auto tempOrder = std::make_shared<Order>(dataManager.createOrder(line));
-		if (tempOrder->m_orderType == 'A')//add order
+	if (file.is_open())
+		while (getline(file, line))
 		{
-			//add order to the book
-			dataManager.addOrderToBook(tempOrder);
-			const char& tempOrderAction = tempOrder->m_orderAction;
-			
-			//check if the targetSize had been reached
-			if(dataManager.targetSizeReached(tempOrderAction))
+			auto tempOrder = std::make_shared<Order>(dataManager.createOrder(line));
+			if (tempOrder->m_orderType == 'A')//add order
 			{
-				double tempPrice;
-				switch(tempOrderAction)
+				//add order to the book
+				dataManager.addOrderToBook(tempOrder);
+				const char& tempOrderAction = tempOrder->m_orderAction;
+
+				//check if the targetSize had been reached
+				if (dataManager.targetSizeReached(tempOrderAction))
 				{
-				case 'S':
-					//get the SELL price
-					tempPrice = dataManager.getSellPrice();
+					//get the price
+					auto tempPrice = dataManager.getPrice(tempOrderAction);
 
 					//if the data is not the same as the previous output, then we can print
-					if (tempPrice != dataManager.getPreviousSellPrice())
+					if (tempPrice != dataManager.getPreviousPrice(tempOrderAction))
 					{
+						//output data
 						std::cout << dataManager.getOutputData(tempOrderAction);
 
 						//set current price to previous price
 						dataManager.makePriceCurrent(tempOrderAction);
-						dataManager.makeTargetSizeCurrent(tempOrderAction);
+						dataManager.makeTargetSizeCurrent(tempOrderAction);			
 					}
-					break;
-				case 'B':
-					//get the BUY price
-					tempPrice = dataManager.getBuyPrice();
-
-					//if the data is not the same as the previous output, then we can print
-					if (tempPrice != dataManager.getPreviousBuyPrice())
-					{
-						std::cout << dataManager.getOutputData(tempOrderAction);
-						//set current price to previous price
-						dataManager.makePriceCurrent(tempOrderAction);
-						dataManager.makeTargetSizeCurrent(tempOrderAction);
-					}
-					break;
-				default:
-					std::cout << "Error, Invalid tempOrderAction in main"<<std::endl;
 				}
-			}	
-			//targetSize is not longer reached
-			else if(dataManager.previousTargetSizeReached(tempOrderAction))
-			{	
-				std::cout << tempOrder->m_timestamp << " "+tempOrderAction << " N/A" << std::endl; 
-				break;	
-			}
-		}
-		else if (tempOrder->m_orderType == 'R')//reduce order
-		{
-			dataManager.applyReduceOrder(tempOrder);
-			const char& tempOrderAction = dataManager.reduceOrderAction();
 
-			//check if the targetSize had been reached previously
-			if (dataManager.previousTargetSizeReached(tempOrder->m_orderAction))
-			{
-				double tempPrice;
-				switch (tempOrderAction)
+				//targetSize is no longer reached
+				else if (dataManager.previousTargetSizeReached(tempOrderAction))
 				{
-				case 'B':
+					//output data
+					std::cout << tempOrder->m_timestamp << " " + tempOrderAction << " N/A" << std::endl;
+					
+					//set current price to previous price
+					dataManager.makePriceCurrent(tempOrderAction);
+					dataManager.makeTargetSizeCurrent(tempOrderAction);		
+				}
+			}
+			else if (tempOrder->m_orderType == 'R')//reduce order
+			{
+				dataManager.applyReduceOrder(tempOrder);
+				const char& tempOrderAction = dataManager.reduceOrderAction();
 
-					//if it was previously reached and is no longer, print n/a for price
-					if (dataManager.targetSizeReached('B') == false)
-					{
-						std::cout << tempOrder->m_timestamp << " S " << " N/A" << std::endl;
-						dataManager.makePriceCurrent(tempOrderAction);
-						dataManager.makeTargetSizeCurrent(tempOrderAction);
-						break;
-					}						
-					tempPrice = dataManager.getBuyPrice();
-
-					//if the data is not the same as the previous output, then we can print
-					if (tempPrice != dataManager.getPreviousSellPrice())
-					{
-						std::cout << dataManager.getOutputData(tempOrderAction);
-						//set current price to previous price
-						dataManager.makePriceCurrent(tempOrderAction);
-						dataManager.makeTargetSizeCurrent(tempOrderAction);
-					}
-					break;
-				case 'S':
-					//if it was previously reached and is no longer, print n/a for price
-					if (dataManager.targetSizeReached('S') == false)
-					{
-						std::cout << tempOrder->m_timestamp << " B " << " N/A" << std::endl;
-						dataManager.makePriceCurrent(tempOrderAction);
-						dataManager.makeTargetSizeCurrent(tempOrderAction);
-						break;
-					}
+				//check if the targetSize had been reached previously
+				if (dataManager.targetSizeReached(tempOrderAction))
+				{
 
 					//get the price
-					tempPrice = dataManager.getSellPrice();
+					auto tempPrice = dataManager.getPrice(tempOrderAction);
 
 					//if the data is not the same as the previous output, then we can print
-					if (tempPrice != dataManager.getPreviousBuyPrice())
+					if (tempPrice != dataManager.getPreviousPrice(tempOrderAction))
 					{
+						//output data
 						std::cout << dataManager.getOutputData(tempOrderAction);
+
 						//set current price to previous price
 						dataManager.makePriceCurrent(tempOrderAction);
 						dataManager.makeTargetSizeCurrent(tempOrderAction);
 					}
-					break;
-				default:
-					std::cout << "Error, Invalid tempOrderAction in main" << std::endl;
+				}
+				//targetSize is no longer reached
+				else if (dataManager.previousTargetSizeReached(tempOrderAction))
+				{
+					//output data
+					std::cout << tempOrder->m_timestamp << " " << ((tempOrderAction=='B') ? "S" : "B") << " N/A" << std::endl;
+					
+					//set current price to previous price
+					dataManager.makePriceCurrent(tempOrderAction);
+					dataManager.makeTargetSizeCurrent(tempOrderAction);
 				}
 			}
+			//std::cout << line << std::endl;
 		}
-		
-		//std::cout << line << std::endl;
-	}
-	
+	std::cout << "complete";
+
 	file.close();
 	std::cin.get();
 	return 0;

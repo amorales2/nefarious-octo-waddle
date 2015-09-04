@@ -70,7 +70,6 @@ void Book::reduceOrderInSellMap(const OrderPtr& order)
 	//reduce the order in SELL map by looking up its ID
 	m_sellOrdersById[order->m_orderId]->m_size -= order->m_size;
 
-
 	//check that the order has not dropped to ZERO
 	if (m_sellOrdersById[order->m_orderId]->m_size <= 0)
 	{
@@ -143,7 +142,7 @@ long long Book::priceToSellShares(int targetSize)
 	//sort the sell vector by price
 	sortSellVectorByPrice();
 
-	while (!(counter>=m_sellOrdersByPrice.size()) && targetSize>0)
+	while (counter < m_sellOrdersByPrice.size() && targetSize>0)
 	{
 		tempPrice = m_sellOrdersByPrice.at(counter).second;
 		tempId = m_sellOrdersByPrice.at(counter).first;
@@ -179,7 +178,7 @@ long long Book::priceToBuyShares(int targetSize)
 	//sort the sell vector by price
 	sortBuyVectorByPrice();
 
-	while (!(counter >= m_buyOrdersByPrice.size()) && targetSize>0)
+	while (counter < m_buyOrdersByPrice.size() && targetSize > 0)
 	{
 		tempPrice = m_buyOrdersByPrice.at(counter).second;
 		tempId = m_buyOrdersByPrice.at(counter).first;
@@ -203,11 +202,11 @@ long long Book::priceToBuyShares(int targetSize)
 }
 
 //get member data
-OrderPtr Book::getLastOrderAdded()
+OrderPtr& Book::getLastOrderAdded()
 {
 	return m_lastOrderAdded;
 }
-OrderPtr Book::getLastReduceOrder()
+OrderPtr& Book::getLastReduceOrder()
 {
 	return m_lastReduceOrder;
 }

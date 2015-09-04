@@ -58,7 +58,7 @@ Order DataManager::createOrder(const std::string& orderData)
 	return order;
 }
 
-void DataManager::addOrderToBook(OrderPtr order)
+void DataManager::addOrderToBook(OrderPtr& order)
 {
 	if (order->m_orderAction == 'B')
 	{
@@ -70,7 +70,7 @@ void DataManager::addOrderToBook(OrderPtr order)
 	}
 }
 
-void DataManager::applyReduceOrder(OrderPtr order)
+void DataManager::applyReduceOrder(OrderPtr& order)
 {
 
 	//search for order in buyMap first
@@ -225,9 +225,9 @@ long long DataManager::getPrice(const char & action)
 {
 	switch (action)
 	{
-	case 'B':
-		return getSellPrice();
 	case 'S':
+		return getSellPrice();
+	case 'B':
 		return getBuyPrice();
 	default:
 		std::cout << "Error in DataManager::getPrice(), invalid action" << std::endl;
@@ -239,14 +239,22 @@ void DataManager::setTargetSize(int targetSize)
 {
 	m_targetSize = targetSize;
 }
-long long DataManager::getPreviousBuyPrice()
+
+long long DataManager::getPreviousPrice(const char& action)
 {
-	return m_previousBuyPrice;
+	switch (action)
+	{
+	case 'B':
+		return m_previousBuyPrice;
+	case 'S':
+		return m_previousSellPrice;
+	default:
+		std::cout << "Error in DataManager::getPreviousPrice(), invalid action" << std::endl;
+		return 0;
+	}
+
 }
-long long DataManager::getPreviousSellPrice()
-{
-	return m_previousSellPrice;
-}
+
 char& DataManager::reduceOrderAction()
 {
 	return m_book.getLastReduceOrder()->m_orderAction;

@@ -13,8 +13,8 @@ public:
 	Order createOrder(const std::string& orderData);
 
 	//new functions with Unique_ptr
-	void addOrderToBook(OrderPtr order);
-	void applyReduceOrder(OrderPtr order);
+	void addOrderToBook(OrderPtr& order);
+	void applyReduceOrder(OrderPtr& order);
 	void setTargetSize(int targetSize);
 
 	std::string getOutputData(const char& action);
@@ -32,8 +32,7 @@ public:
 	int DataManager::getTargetSize();
 	long long DataManager::getBuyPrice();
 	long long DataManager::getSellPrice();
-	long long DataManager::getPreviousBuyPrice();
-	long long DataManager::getPreviousSellPrice();
+	long long DataManager::getPreviousPrice(const char& action);
 	char& reduceOrderAction();
 
 private:

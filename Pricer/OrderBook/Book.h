@@ -29,8 +29,8 @@ public:
 	//getter functions
 	int getCurrentBuySize();
 	int getCurrentSellSize();
-	OrderPtr getLastOrderAdded();
-	OrderPtr getLastReduceOrder();
+	OrderPtr& getLastOrderAdded();
+	OrderPtr& getLastReduceOrder();
 
 	//main data structure for orders
 	orderMapById m_buyOrdersById;
