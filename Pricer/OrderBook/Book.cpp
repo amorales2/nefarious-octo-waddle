@@ -43,8 +43,7 @@ void Book::reduceOrderInBuyMap(const OrderPtr& order)
 {
 	m_lastReduceOrder = order;
 	m_lastReduceOrder->m_orderAction = m_buyOrdersById.at(order->m_orderId)->m_orderAction;
-
-
+	
 	//reduce size
 	//m_currentBuySize -= m_buyOrdersById[order->m_orderId]->m_size;
 	m_currentBuySize = m_currentBuySize - order->m_size;
@@ -110,7 +109,6 @@ void Book::removeSellOrder(const std::string& orderId)
 	m_sellOrdersById.erase(orderId);
 }
 
-//TODO test
 void Book::sortBuyVectorByPrice()
 {
 
@@ -121,7 +119,6 @@ void Book::sortBuyVectorByPrice()
 	});
 }
 
-//TODO test
 void Book::sortSellVectorByPrice()
 {
 	std::sort(m_sellOrdersByPrice.begin(), m_sellOrdersByPrice.end(),
@@ -136,10 +133,7 @@ long long Book::priceToSellShares(long long targetSize)
 	//When BUYING shares, we want to purchase the LEAST expensive first from the SELL list
 
 	long long totalPrice = 0;
-	long long counter = 0;
-	long long tempSize = 0;
 	std::string tempId;
-	long long currentPrice = 0;
 
 	//sort the sell vector by price
 	sortSellVectorByPrice();
@@ -166,10 +160,7 @@ long long Book::priceToBuyShares(long long targetSize)
 	//When SELLING shares, we want to sell the MOST expensive first from the BUY list
 
 	long long totalPrice = 0;
-	long long counter = 0;
-	long long tempSize = 0;
 	std::string tempId;
-	long long currentPrice = 0;
 
 	//sort the sell vector by price
 	sortBuyVectorByPrice();

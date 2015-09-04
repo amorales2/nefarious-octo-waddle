@@ -8,7 +8,7 @@ typedef std::shared_ptr<Order> OrderPtr;
 class DataManager
 {
 public:
-	DataManager(long long targetSize);
+	DataManager(int targetSize);
 
 	Order createOrder(const std::string& orderData);
 
@@ -17,18 +17,15 @@ public:
 	void applyReduceOrder(OrderPtr& order);
 	void setTargetSize(long long targetSize);
 
-	std::string getOutputData(const char& action);
+	std::string getOutputData(const OrderPtr& action);
 	bool targetSizeReached(const char& orderType);
 	bool previousTargetSizeReached(const char& orderType);
-
-	//TODO: name this something else
-	void printOutputToFile(std::string fileName);
 
 	//TODO
 	bool updateTargetSizeReached(const char & action);
 	bool updatePrice(const char& action);
 
-	long long getTargetSize();
+	int getTargetSize();
 	long long getBuyPrice();
 	long long getSellPrice();
 	long long getPreviousPrice(const char& action);
@@ -38,7 +35,7 @@ public:
 
 private:
 	Book m_book;
-	long long m_targetSize;
+	int m_targetSize;
 
 	//for tracking price
 	long long m_previousBuyPrice;

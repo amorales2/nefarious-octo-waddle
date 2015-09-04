@@ -6,7 +6,7 @@
 #include <memory>
 
 
-DataManager::DataManager(long long targetSize)
+DataManager::DataManager(int targetSize)
 	: m_book(),
 	m_targetSize(targetSize),
 	m_buyPrice(0),
@@ -52,7 +52,7 @@ Order DataManager::createOrder(const std::string& orderData)
 	
 	//size
 	test >> temp;
-	order.m_size = std::stoll(temp);
+	order.m_size = std::stoi(temp);
 
 	return order;
 }
@@ -71,7 +71,6 @@ void DataManager::addOrderToBook(OrderPtr& order)
 
 void DataManager::applyReduceOrder(OrderPtr& order)
 {
-
 	//search for order in buyMap first
 	auto it = m_book.m_buyOrdersById.find(order->m_orderId);
 	if (it != m_book.m_buyOrdersById.end())
@@ -87,9 +86,7 @@ void DataManager::applyReduceOrder(OrderPtr& order)
 		m_book.reduceOrderInSellMap(order);
 		return;
 	}
-
 	std::cout << "Error: reduce order id " << order->m_orderId << " can't be found" << std::endl;
-
 }
 
 bool DataManager::targetSizeReached(const char & orderAction)
@@ -120,19 +117,22 @@ bool DataManager::previousTargetSizeReached(const char & orderType)
 	}
 }
 
-std::string DataManager::getOutputData(const char& action)
+std::string DataManager::getOutputData(const OrderPtr& order)
 {
 	//TODO: build string and output to console
+	const char orderAction = order->m_orderAction;
+	const char orderType = order->m_orderType;
+	auto tempTimestamp = std::to_string((orderType == 'A') ? 
+		m_book.getLastOrderAdded()->m_timestamp : m_book.getLastReduceOrder()->m_timestamp);
 
-	if (action == 'B')
-	{
-		auto tempTimestamp = std::to_string(m_book.getLastOrderAdded()->m_timestamp);
+	
+	if (orderAction == 'B')
+	{		
 		auto tempPrice = std::to_string(getBuyPrice());
 		return (tempTimestamp + " S " + tempPrice + "\n");
 	}
-	else if (action == 'S')
+	else if (orderAction == 'S')
 	{
-		auto tempTimestamp = std::to_string(m_book.getLastOrderAdded()->m_timestamp);
 		auto tempPrice = std::to_string(getSellPrice());
 		return (tempTimestamp + " B " + tempPrice + "\n");
 	}
@@ -143,7 +143,7 @@ std::string DataManager::getOutputData(const char& action)
 	}
 }
 
-long long DataManager::getTargetSize()
+int DataManager::getTargetSize()
 {
 	return m_targetSize;
 }
@@ -158,10 +158,6 @@ long long DataManager::getSellPrice()
 	return m_sellPrice = m_book.priceToSellShares(m_targetSize);
 }
 
-void DataManager::printOutputToFile(std::string fileName)
-{
-	//TODO: build string and output to file
-}
 
 bool DataManager::updateTargetSizeReached(const char & action)
 {
@@ -170,7 +166,7 @@ bool DataManager::updateTargetSizeReached(const char & action)
 	case 'B':
 		{
 			bool newTargetSizeReached = targetSizeReached(action);
-			if (m_previousBuyTargetReached == newTargetSizeReached)
+			if (m_previousBuyTargetReached != newTargetSizeReached)
 			{
 				m_previousBuyTargetReached = newTargetSizeReached;
 				return true;
@@ -180,9 +176,9 @@ bool DataManager::updateTargetSizeReached(const char & action)
 	case 'S':
 		{
 			bool newTargetSizeReached = targetSizeReached(action);
-			if (m_previousBuyTargetReached == newTargetSizeReached)
+			if (m_previousSellTargetReached != newTargetSizeReached)
 			{
-				m_previousBuyTargetReached = newTargetSizeReached;
+				m_previousSellTargetReached = newTargetSizeReached;
 				return true;
 			}
 			return false;
@@ -240,7 +236,6 @@ long long DataManager::getPreviousPrice(const char& action)
 		std::cout << "Error in DataManager::getPreviousPrice(), invalid action" << std::endl;
 		return 0;
 	}
-
 }
 
 char& DataManager::reduceOrderAction()

@@ -10,9 +10,11 @@ int main(int argc, char *argv[])
 	outputFile.open("test.out");
 
 	//TODO: fix hard coded value
-	std::ifstream file("pricer1.in");
+	std::ifstream file("pricer.in");
+	std::ofstream outFile;
+	outFile.open("test.out", std::ofstream::binary);
 	std::string line;
-	long long targetSize = std::stoi(argv[2]);
+	int targetSize = 10000;//std::stoi(argv[2]);
 	DataManager dataManager(targetSize);
 
 	if (file.is_open())
@@ -34,7 +36,9 @@ int main(int argc, char *argv[])
 					if (dataManager.updatePrice(tempOrderAction))
 					{
 						//output data
-						std::cout << dataManager.getOutputData(tempOrderAction);
+						//std::cout << 
+						auto output = dataManager.getOutputData(tempOrder);
+						outFile.write(output.c_str(),output.length());
 						dataManager.updateTargetSizeReached(tempOrderAction);
 					}
 				}
@@ -44,7 +48,10 @@ int main(int argc, char *argv[])
 				{
 					//output data
 					//std::cout << tempOrder->m_timestamp << " " + tempOrderAction << " N/A" << std::endl;
+					auto output((std::to_string(tempOrder->m_timestamp)+" ") + (tempOrderAction +" NA\n"));
+					outFile.write(output.c_str(), output.length());
 					dataManager.updateTargetSizeReached(tempOrderAction);
+					dataManager.updatePrice(tempOrderAction);
 				}
 			}
 			else if (tempOrder->m_orderType == 'R')//reduce order
@@ -55,13 +62,13 @@ int main(int argc, char *argv[])
 				//check if the targetSize had been reached previously
 				if (dataManager.targetSizeReached(tempOrderAction))
 				{
-
 					//if the data is not the same as the previous output, then we can print
 					if (dataManager.updatePrice(tempOrderAction))
 					{
 						//output data
-						std::cout << dataManager.getOutputData(tempOrderAction);
-						//outputFile << dataManager.getOutputData(tempOrderAction);
+						//std::cout << dataManager.getOutputData(tempOrder);
+						auto output = dataManager.getOutputData(tempOrder);
+						outFile.write(output.c_str(), output.length());
 						//set current price to previous price
 						dataManager.updateTargetSizeReached(tempOrderAction);
 					}
@@ -70,15 +77,16 @@ int main(int argc, char *argv[])
 				else if (dataManager.previousTargetSizeReached(tempOrderAction))
 				{
 					//output data
-					//std::cout << tempOrder->m_timestamp << " " << ((tempOrderAction=='B') ? "S" : "B") << " N/A" << std::endl;
-					//outputFile << std::to_string(tempOrder->m_timestamp) + " " + ((tempOrderAction == 'B') ? "S" : "B") + " N/A" << std::endl;
-					
+					//std::cout << tempOrder->m_timestamp << " " << ((tempOrderAction=='B') ? "S" : "B") << " N/A" << std::endl;					
+					auto output((std::to_string(tempOrder->m_timestamp) + " ") + ((tempOrderAction=='B')?"S NA\n": "B NA\n"));
+					outFile.write(output.c_str(), output.length());
 					//set current price to previous price
 					dataManager.updateTargetSizeReached(tempOrderAction);
+					dataManager.updatePrice(tempOrderAction);
 				}
 			}
 		}
-	//std::cout << "complete";
+	std::cout << "complete";
 	file.close();
 	std::cin.get();
 	return 0;
