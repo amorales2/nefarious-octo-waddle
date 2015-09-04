@@ -9,8 +9,8 @@
 DataManager::DataManager(long long targetSize)
 	: m_book(),
 	m_targetSize(targetSize),
-	m_buyPrice(0.0),
-	m_sellPrice(0.0),
+	m_buyPrice(0),
+	m_sellPrice(0),
 	m_previousBuyTargetReached(false),
 	m_previousSellTargetReached(false)
 

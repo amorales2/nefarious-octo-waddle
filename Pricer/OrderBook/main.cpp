@@ -29,17 +29,12 @@ int main(int argc, char *argv[])
 		while (getline(file, line))
 		{
 			auto tempOrder = std::make_shared<Order>(dataManager.createOrder(line));
+
 			if (tempOrder->m_orderType == 'A')//add order
 			{
 				//add order to the book
 				dataManager.addOrderToBook(tempOrder);
-
-				//**debug code
-				if(tempOrder->m_timestamp == 34626808 )
-				{
-					std::cout << "reached"<<std::endl;
-				}
-
+				
 				const char& tempOrderAction = tempOrder->m_orderAction;
 
 				//check if the targetSize had been reached
@@ -76,12 +71,6 @@ int main(int argc, char *argv[])
 				dataManager.applyReduceOrder(tempOrder);
 				const char& tempOrderAction = dataManager.reduceOrderAction();
 
-				//**debug code
-				if (tempOrder->m_timestamp == 34626808)
-				{
-					std::cout << "reached" << std::endl;
-				}
-
 				//check if the targetSize had been reached previously
 				if (dataManager.targetSizeReached(tempOrderAction))
 				{
@@ -106,7 +95,6 @@ int main(int argc, char *argv[])
 					//output data
 					std::cout << tempOrder->m_timestamp << " " << ((tempOrderAction=='B') ? "S" : "B") << " N/A" << std::endl;
 					//outputFile << std::to_string(tempOrder->m_timestamp) + " " + ((tempOrderAction == 'B') ? "S" : "B") + " N/A" << std::endl;
-				
 					
 					//set current price to previous price
 					dataManager.makePriceCurrent(tempOrderAction);

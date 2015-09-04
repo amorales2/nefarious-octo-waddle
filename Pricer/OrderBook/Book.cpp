@@ -70,7 +70,6 @@ void Book::reduceOrderInSellMap(const OrderPtr& order)
 	m_currentSellSize = m_currentSellSize - order-> m_size;
 
 	//reduce the order in SELL map by looking up its ID
-	m_sellOrdersById[order->m_orderId]->m_size -= order->m_size;
 	m_sellOrdersById.at(order->m_orderId)->m_size = m_sellOrdersById.at(order->m_orderId)->m_size - order->m_size;
 
 	//check that the order has not dropped to ZERO
