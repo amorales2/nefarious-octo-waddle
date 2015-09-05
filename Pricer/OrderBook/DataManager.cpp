@@ -49,7 +49,7 @@ Order DataManager::createOrder(const std::string& orderData)
 	//remove the decimal from the string
 	temp.erase(std::remove(temp.begin(), temp.end(), '.'), temp.end());
 	order.m_price = std::stoll(temp);
-	
+
 	//size
 	test >> temp;
 	order.m_size = std::stoi(temp);
@@ -119,21 +119,28 @@ bool DataManager::previousTargetSizeReached(const char & orderType)
 
 std::string DataManager::getOutputData(const OrderPtr& order)
 {
-	//TODO: build string and output to console
 	const char orderAction = order->m_orderAction;
 	const char orderType = order->m_orderType;
-	auto tempTimestamp = std::to_string((orderType == 'A') ? 
+
+	//get the timestamp from the last Add order or last Reduce order
+	auto tempTimestamp = std::to_string((orderType == 'A') ?
 		m_book.getLastOrderAdded()->m_timestamp : m_book.getLastReduceOrder()->m_timestamp);
 
-	
+
 	if (orderAction == 'B')
-	{		
+	{
 		auto tempPrice = std::to_string(getBuyPrice());
+
+		//add the decimal back in
+		tempPrice = tempPrice.substr(0, tempPrice.length() - 2) + "." + tempPrice.substr(tempPrice.length() - 2, tempPrice.length());
 		return (tempTimestamp + " S " + tempPrice + "\n");
 	}
 	else if (orderAction == 'S')
 	{
 		auto tempPrice = std::to_string(getSellPrice());
+
+		//add the decimal back in
+		tempPrice = tempPrice.substr(0, tempPrice.length() - 2) + "." + tempPrice.substr(tempPrice.length() - 2, tempPrice.length());
 		return (tempTimestamp + " B " + tempPrice + "\n");
 	}
 	else
@@ -164,25 +171,25 @@ bool DataManager::updateTargetSizeReached(const char & action)
 	switch (action)
 	{
 	case 'B':
+	{
+		bool newTargetSizeReached = targetSizeReached(action);
+		if (m_previousBuyTargetReached != newTargetSizeReached)
 		{
-			bool newTargetSizeReached = targetSizeReached(action);
-			if (m_previousBuyTargetReached != newTargetSizeReached)
-			{
-				m_previousBuyTargetReached = newTargetSizeReached;
-				return true;
-			}
-			return false;
+			m_previousBuyTargetReached = newTargetSizeReached;
+			return true;
 		}
+		return false;
+	}
 	case 'S':
+	{
+		bool newTargetSizeReached = targetSizeReached(action);
+		if (m_previousSellTargetReached != newTargetSizeReached)
 		{
-			bool newTargetSizeReached = targetSizeReached(action);
-			if (m_previousSellTargetReached != newTargetSizeReached)
-			{
-				m_previousSellTargetReached = newTargetSizeReached;
-				return true;
-			}
-			return false;
+			m_previousSellTargetReached = newTargetSizeReached;
+			return true;
 		}
+		return false;
+	}
 	default:
 		std::cout << "Error in DataManager::makeTargetsizeCurrent,  invalid action" << std::endl;
 		return false;
@@ -194,28 +201,28 @@ bool DataManager::updatePrice(const char& action)
 	switch (action)
 	{
 	case 'S':
+	{
+		long long newPrice = m_book.priceToSellShares(m_targetSize);
+		if (m_previousSellPrice != newPrice)
 		{
-			long long newPrice = m_book.priceToSellShares(m_targetSize);
-			if (m_previousSellPrice != newPrice)
-			{
-				m_previousSellPrice = newPrice;
-				return true;
-			}
-			return false;
+			m_previousSellPrice = newPrice;
+			return true;
 		}
+		return false;
+	}
 	case 'B':
+	{
+		long long newPrice = m_book.priceToBuyShares(m_targetSize);
+		if (m_previousBuyPrice != newPrice)
 		{
-			long long newPrice = m_book.priceToBuyShares(m_targetSize);
-			if (m_previousBuyPrice != newPrice)
-			{
-				m_previousBuyPrice= newPrice;
-				return true;
-			}
-			return false;
+			m_previousBuyPrice = newPrice;
+			return true;
 		}
+		return false;
+	}
 	default:
-			std::cout << "Error in DataManager::getPrice(), invalid action" << std::endl;
-			return false;
+		std::cout << "Error in DataManager::getPrice(), invalid action" << std::endl;
+		return false;
 	}
 }
 

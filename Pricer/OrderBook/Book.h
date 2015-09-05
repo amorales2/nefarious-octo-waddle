@@ -45,9 +45,6 @@ private:
 	OrderPtr m_lastOrderAdded;
 	OrderPtr m_lastReduceOrder;
 
-	
-
 	void removeBuyOrder(const std::string& orderId);
 	void removeSellOrder(const std::string& orderId);
-
 };

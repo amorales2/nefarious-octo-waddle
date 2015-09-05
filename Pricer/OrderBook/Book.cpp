@@ -1,5 +1,4 @@
 #include "Book.h"
-#include <algorithm>
 #include <assert.h>
 
 
@@ -43,17 +42,17 @@ void Book::reduceOrderInBuyMap(const OrderPtr& order)
 {
 	m_lastReduceOrder = order;
 	m_lastReduceOrder->m_orderAction = m_buyOrdersById.at(order->m_orderId)->m_orderAction;
-	
+
 	//reduce size
 	//m_currentBuySize -= m_buyOrdersById[order->m_orderId]->m_size;
 	m_currentBuySize = m_currentBuySize - order->m_size;
 
 	//reduce the order in BUY map by looking up its ID
-	m_buyOrdersById.at(order->m_orderId)->m_size = m_buyOrdersById.at(order->m_orderId)->m_size- order->m_size;
+	m_buyOrdersById.at(order->m_orderId)->m_size = m_buyOrdersById.at(order->m_orderId)->m_size - order->m_size;
 
 	//check that the order hasnt dropped to ZERO
 
-	if(m_buyOrdersById[order->m_orderId]->m_size<=0)
+	if (m_buyOrdersById[order->m_orderId]->m_size <= 0)
 	{
 		//delete order from map
 		removeBuyOrder(order->m_orderId);
@@ -66,7 +65,7 @@ void Book::reduceOrderInSellMap(const OrderPtr& order)
 	m_lastReduceOrder->m_orderAction = m_sellOrdersById.at(order->m_orderId)->m_orderAction;
 
 	//reduce size
-	m_currentSellSize = m_currentSellSize - order-> m_size;
+	m_currentSellSize = m_currentSellSize - order->m_size;
 
 	//reduce the order in SELL map by looking up its ID
 	m_sellOrdersById.at(order->m_orderId)->m_size = m_sellOrdersById.at(order->m_orderId)->m_size - order->m_size;
@@ -86,7 +85,7 @@ void Book::removeBuyOrder(const std::string& orderId)
 
 	auto it = std::find(m_buyOrdersByPrice.begin(), m_buyOrdersByPrice.end(), tempPair);
 
-	std::iter_swap(it, m_buyOrdersByPrice.end()-1);
+	std::iter_swap(it, m_buyOrdersByPrice.end() - 1);
 	m_buyOrdersByPrice.pop_back();
 
 	//delete from map
@@ -102,7 +101,7 @@ void Book::removeSellOrder(const std::string& orderId)
 
 	auto it = std::find(m_sellOrdersByPrice.begin(), m_sellOrdersByPrice.end(), tempPair);
 
-	std::iter_swap(it, m_sellOrdersByPrice.end()-1);
+	std::iter_swap(it, m_sellOrdersByPrice.end() - 1);
 	m_sellOrdersByPrice.pop_back();
 
 	//delete from map
