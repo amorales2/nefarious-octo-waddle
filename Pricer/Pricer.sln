@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OrderBook", "OrderBook\OrderBook.vcxproj", "{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}"
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pricer", "Pricer\Pricer.vcxproj", "{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +15,16 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Debug|Win32.ActiveCfg = Debug|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Debug|Win32.Build.0 = Debug|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Release|Any CPU.ActiveCfg = Release|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Release|Win32.ActiveCfg = Release|Win32
-		{4EEC2F52-F00E-43E3-81D8-FBBB9D9DA053}.Release|Win32.Build.0 = Release|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Debug|Win32.Build.0 = Debug|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Release|Win32.ActiveCfg = Release|Win32
+		{348F97C0-A2B7-42B4-A27D-BFFACB1C2C7A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
